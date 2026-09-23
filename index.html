@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --yellow:#FFFC24; --asphalt:#26282B;
+  --yellow:#FFFC24; --asphalt:#26282B; --deep:#26282B;
   --bg:#F6F5EF; --ink:#1E1F22; --muted:#5B5E63; --line:#D9D7CC; --card:#fff;
   --display:'Barlow Condensed','Arial Narrow',Impact,sans-serif;
   --body:'Barlow',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
@@ -45,14 +45,14 @@ nav a:hover{color:var(--yellow)}
 @media (max-width:640px){nav{gap:14px}nav a{font-size:.9rem}.logo{font-size:1.1rem}.logo i{height:24px;width:10px}}
 @media (max-width:460px){.logo{display:none}nav{width:100%;justify-content:space-around}}
 
-.yellow{background:var(--yellow);color:var(--asphalt)}
+.yellow{background:var(--yellow);color:var(--deep)}
 .yellow p{color:#2E2F32}
 .hero{color:#fff;padding:0}
 .hero .wrap{padding-top:110px;padding-bottom:110px}
 .hero h1{font-size:clamp(3.4rem,11vw,8.5rem);text-transform:uppercase;max-width:11ch}
 .hero p{font-size:1.3rem;max-width:44ch;margin:28px 0 36px;color:#E9E8E0}
 .hero .cta{display:flex;flex-wrap:wrap;gap:14px}
-.hero .btn{background:var(--yellow);border-color:var(--yellow);color:var(--asphalt)}
+.hero .btn{background:var(--yellow);border-color:var(--yellow);color:var(--deep)}
 .hero .btn:hover{background:transparent;color:var(--yellow)}
 .hero .btn.ghost{background:transparent;color:#fff;border-color:#fff}
 .hero .btn.ghost:hover{background:#fff;color:var(--asphalt)}
@@ -71,19 +71,18 @@ nav a:hover{color:var(--yellow)}
 .gallery .lead{color:#C9CACD}
 .ghead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px}
 .ctrl{display:flex;gap:10px;align-items:center}
-.ctrl button{font:700 1.1rem var(--display);letter-spacing:.04em;background:var(--yellow);color:var(--asphalt);border:3px solid var(--yellow);min-width:52px;height:52px;padding:0 16px;cursor:pointer}
+.ctrl button{font:700 1.1rem var(--display);letter-spacing:.04em;background:var(--yellow);color:var(--deep);border:3px solid var(--yellow);min-width:52px;height:52px;padding:0 16px;cursor:pointer}
 .ctrl button:hover{background:transparent;color:var(--yellow)}
 .ctrl .pp{background:transparent;color:#fff;border-color:#fff}
 .ctrl .pp:hover{background:#fff;color:var(--asphalt)}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:210px;gap:14px;margin-top:36px}
 .tile{position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:14px;font-weight:600;color:var(--yellow);transition:opacity .35s}
-.tile.y{color:var(--asphalt)}
+.tile.y{color:var(--deep)}
 .tile.out{opacity:0}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tile span{position:relative;background:var(--asphalt);color:#fff;padding:4px 10px;font-size:.95rem}
-.tile:nth-child(1){grid-row:span 2}
 .hint{margin:18px 0 0;font-size:.95rem;color:#C9CACD}
-@media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px}.tile:nth-child(1){grid-row:auto}}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px}}
 
 /* about */
 .about{display:grid;grid-template-columns:1.4fr 1fr;gap:64px;align-items:start}
@@ -109,7 +108,7 @@ textarea{min-height:130px;resize:vertical}
 .f.bad input,.f.bad select,.f.bad textarea{border-color:#B00020}
 .f.bad .err{display:block}
 form .btn{width:100%;font-size:1.3rem}
-.ok{display:none;margin-top:16px;padding:16px;background:var(--yellow);color:var(--asphalt);font-weight:600}
+.ok{display:none;margin-top:16px;padding:16px;background:var(--yellow);color:var(--deep);font-weight:600}
 .ok.show{display:block}
 @media (max-width:860px){.contact{grid-template-columns:1fr;gap:40px}.row{grid-template-columns:1fr}}
 
@@ -287,7 +286,7 @@ document.getElementById('next').addEventListener('click', () => shift(1));
 grid.addEventListener('mouseenter', () => hover = true);
 grid.addEventListener('mouseleave', () => hover = false);
 new IntersectionObserver(e => inView = e[0].isIntersecting, {threshold:.25}).observe(document.getElementById('projecten'));
-setInterval(() => { if (playing && inView && !hover && !document.hidden) replaceOne(); }, 3000);
+setInterval(() => { if (playing && inView && !hover && !document.hidden) replaceOne(); }, 5000);
 document.addEventListener('keydown', e => {
   if (!inView || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
   if (e.key === 'ArrowRight'){ e.preventDefault(); shift(1); }
