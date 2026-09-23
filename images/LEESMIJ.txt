@@ -1,0 +1,4 @@
+Zet hier de foto's van De Waard neer (bijvoorbeeld foto1.jpg, foto2.jpg).
+Verklein ze eerst tot ongeveer 1600 pixels breed, dan laadt de site snel.
+Voeg ze daarna toe in index.html, in de lijst FOTOS, bijvoorbeeld:
+  {t:'Sierbestrating', src:'images/foto1.jpg'}
