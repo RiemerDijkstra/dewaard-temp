@@ -49,7 +49,9 @@ nav a:hover{color:var(--yellow)}
 .yellow p{color:#2E2F32}
 .hero{color:#fff;padding:0}
 .hero .wrap{padding-top:110px;padding-bottom:110px}
-.hero h1{font-size:clamp(3.4rem,11vw,8.5rem);text-transform:uppercase;max-width:11ch}
+.hero h1{font-size:clamp(2.8rem,8vw,6rem);text-transform:uppercase;max-width:none}
+.hero h1 span{display:block}
+.hero h1 span+span{color:var(--yellow)}
 .hero p{font-size:1.3rem;max-width:44ch;margin:28px 0 36px;color:#E9E8E0}
 .hero .cta{display:flex;flex-wrap:wrap;gap:14px}
 .hero .btn{background:var(--yellow);border-color:var(--yellow);color:var(--deep)}
@@ -134,7 +136,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 <main id="top">
   <div class="hero stones">
     <div class="wrap">
-      <h1>Straatwerk dat blijft liggen</h1>
+      <h1><span>Sierlijk, strak en sterk.</span> <span>Dat is ons werk.</span></h1>
       <p>Gebr. de Waard Bestrating uit Egmond aan den Hoef legt sierbestrating, parkeerplaatsen, rijwegen en trottoirs aan. Voor aannemers, gemeenten en particulieren.</p>
       <div class="cta">
         <a class="btn" href="#contact">Vraag een offerte aan</a>
