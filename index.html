@@ -125,7 +125,7 @@ nav a:hover::after{right:0}
 
 /* photo slots: show a placeholder until the file exists */
 .photo{position:relative;overflow:hidden;margin:0;background:#2A2D30 var(--pattern)}
-.photo img,.photo video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .ph-label{position:absolute;left:18px;right:18px;bottom:16px;color:#E8E6DE;font:500 .9rem/1.4 var(--sans)}
 .ph-label code{display:block;margin-top:4px;color:var(--yellow);font:500 .75rem/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
 .photo.loaded .ph-label{display:none}
@@ -133,14 +133,8 @@ nav a:hover::after{right:0}
 /* showcase */
 .showcase{padding:0 0 40px;background:var(--stone)}
 .show-photo{height:clamp(440px,84vh,880px)}
-.show-photo video{transform:scale(1.08);transition:transform 2.4s cubic-bezier(.2,.7,.3,1)}
-.show-photo.in video{transform:none}
-.vid-btn{display:none;position:absolute;z-index:2;top:20px;right:20px;width:46px;height:46px;align-items:center;justify-content:center;background:rgba(27,28,30,.55);border:1px solid rgba(255,255,255,.45);color:#fff;cursor:pointer;--focus:#fff;transition:background .25s,color .25s,border-color .25s}
-.vid-btn:hover{background:var(--yellow);color:var(--asphalt);border-color:var(--yellow)}
-.vid-btn svg{width:18px;height:18px}
-.vid-btn .i-play,.vid-btn.paused .i-pause{display:none}
-.vid-btn.paused .i-play{display:block}
-.show-photo.loaded .vid-btn{display:inline-flex}
+.show-photo img{object-position:40% 50%;transform:scale(1.08);transition:transform 2.4s cubic-bezier(.2,.7,.3,1)}
+.show-photo.in img{transform:none}
 .show-photo .ph-label{top:50%;bottom:auto;transform:translateY(-50%);text-align:center;font-size:1.05rem}
 .show-card{position:relative;z-index:1;margin:-150px 0 0 auto;max-width:540px;background:var(--asphalt);color:#fff;padding:44px 46px 40px;border-top:3px solid var(--yellow);--eyeline:var(--yellow)}
 .show-card h2{font-size:clamp(2.1rem,4vw,3rem)}
@@ -220,7 +214,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   html{scroll-behavior:auto}
   .js .hero-in>*{opacity:1;transform:none;animation:none}
   .js .reveal{opacity:1;transform:none;transition:none}
-  .show-photo video{transform:none;transition:none}
+  .show-photo img{transform:none;transition:none}
   .btn,.tile,.services h3{transition:none}
 }
 </style>
@@ -278,12 +272,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   </section>
 
   <section class="showcase" id="uitgelicht" aria-label="Uitgelicht werk">
-    <figure class="photo show-photo zoom" data-label="Plaats hier de video, bijvoorbeeld een oprit of straat die wordt gelegd">
-      <video src="video/uitgelicht.mp4" poster="images/uitgelicht.jpg" muted loop playsinline preload="auto" aria-label="Video van bestrating aangelegd door Gebr. de Waard"></video>
-      <button class="vid-btn" type="button" aria-label="Pauzeer video">
-        <svg class="i-pause" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
-        <svg class="i-play" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
-      </button>
+    <figure class="photo show-photo zoom" data-label="Plaats hier uw mooiste foto, bijvoorbeeld een oprit of straat">
+      <img src="images/uitgelicht.jpg" alt="Stratenmaker van Gebr. de Waard legt sierbestrating naast een woning">
     </figure>
     <div class="wrap">
       <div class="show-card reveal">
@@ -419,8 +409,6 @@ const FOTOS = [
 ];
 const WISSEL_MS = 5000;   // elke 5 seconden een nieuwe foto
 
-// Uitgelichte video: zet het bestand als video/uitgelicht.mp4 (MP4, zonder geluid).
-// Optioneel: images/uitgelicht.jpg als stilstaand beeld zolang de video laadt.
 /* ====================================== */
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -436,38 +424,13 @@ function makeLabel(text, file){
   return l;
 }
 document.querySelectorAll('figure.photo').forEach(fig => {
-  const media = fig.querySelector('img, video');
-  fig.append(makeLabel(fig.dataset.label || 'Foto', media.getAttribute('src')));
-  const ok = () => fig.classList.add('loaded'), bad = () => media.remove();
-  if (media.tagName === 'VIDEO'){
-    if (media.error) bad();
-    else if (media.readyState >= 1) ok();
-    else { media.addEventListener('loadedmetadata', ok); media.addEventListener('error', bad); }
-  } else if (media.complete){ media.naturalWidth ? ok() : bad(); }
-  else { media.addEventListener('load', ok); media.addEventListener('error', bad); }
+  const img = fig.querySelector('img');
+  fig.append(makeLabel(fig.dataset.label || 'Foto', img.getAttribute('src')));
+  const ok = () => fig.classList.add('loaded'), bad = () => img.remove();
+  if (img.complete){ img.naturalWidth ? ok() : bad(); }
+  else { img.addEventListener('load', ok); img.addEventListener('error', bad); }
 });
 
-/* ---- Uitgelichte video: speelt alleen als hij in beeld is ---- */
-const vidFig = document.querySelector('.show-photo'), vid = vidFig.querySelector('video') || document.createElement('video'), vbtn = vidFig.querySelector('.vid-btn');
-let userPaused = reduce, vidInView = false;
-vid.muted = true;
-function setVidBtn(){
-  vbtn.classList.toggle('paused', vid.paused);
-  vbtn.setAttribute('aria-label', vid.paused ? 'Speel video af' : 'Pauzeer video');
-}
-function syncVid(){
-  if (!vid.isConnected) return;
-  if (vidInView && !userPaused && !document.hidden) vid.play().catch(setVidBtn);
-  else vid.pause();
-}
-vid.addEventListener('play', setVidBtn); vid.addEventListener('pause', setVidBtn);
-vbtn.addEventListener('click', () => {
-  if (vid.paused){ userPaused = false; vid.play().catch(() => {}); }
-  else { userPaused = true; vid.pause(); }
-});
-new IntersectionObserver(e => { vidInView = e[0].isIntersecting; syncVid(); }, {threshold:.2}).observe(vidFig);
-document.addEventListener('visibilitychange', syncVid);
-setVidBtn();
 
 /* ---- Header en mobiel menu ---- */
 const head = document.getElementById('kop'), menuBtn = head.querySelector('.menu-btn');
@@ -596,10 +559,10 @@ function fill(el, idx){
   el.replaceChildren(makeLabel(f.t, f.src || ''));
   const cap = document.createElement('span'); cap.className = 'cap'; cap.textContent = f.t; el.append(cap);
   if (f.src && !failed.has(f.src)){
-    const im = new Image(); im.alt = ''; im.decoding = 'async';
+    const im = new Image(); im.alt = ''; im.decoding = 'async'; im.loading = 'lazy';
     im.onload = () => el.classList.add('loaded');
     im.onerror = () => { failed.add(f.src); im.remove(); };
-    im.src = f.src; el.prepend(im);
+    el.prepend(im); im.src = f.src;
   }
 }
 function render(){ tiles.forEach((el, i) => fill(el, slots[i])); }
