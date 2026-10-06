@@ -123,17 +123,21 @@ nav a:hover::after{right:0}
   .hero-in{padding-top:70px;padding-bottom:80px}
 }
 
-/* photo slots: show a placeholder until the file exists */
+/* photo slots: de foto vervaagt in zodra hij binnen is; de plaatshouder verschijnt alleen als het bestand ontbreekt */
 .photo{position:relative;overflow:hidden;margin:0;background:#2A2D30 var(--pattern)}
 .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.ph-label{position:absolute;left:18px;right:18px;bottom:16px;color:#E8E6DE;font:500 .9rem/1.4 var(--sans)}
+.js .photo img{opacity:0;transition:opacity .5s ease}
+.js .photo.loaded img{opacity:1}
+.ph-label{display:none;position:absolute;left:18px;right:18px;bottom:16px;color:#E8E6DE;font:500 .9rem/1.4 var(--sans)}
 .ph-label code{display:block;margin-top:4px;color:var(--yellow);font:500 .75rem/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
-.photo.loaded .ph-label{display:none}
+.photo.missing .ph-label{display:block}
 
 /* showcase */
 .showcase{padding:0 0 40px;background:var(--stone)}
 .show-photo{height:clamp(440px,84vh,880px)}
-.show-photo img{object-position:40% 50%;transform:scale(1.08);transition:transform 2.4s cubic-bezier(.2,.7,.3,1)}
+.show-photo{background-size:cover;background-position:40% 50%;background-repeat:no-repeat}
+.show-photo img{object-position:40% 50%;transform:scale(1.08)}
+.js .show-photo img{transition:transform 2.4s cubic-bezier(.2,.7,.3,1),opacity .7s ease}
 .show-photo.in img{transform:none}
 .show-photo .ph-label{top:50%;bottom:auto;transform:translateY(-50%);text-align:center;font-size:1.05rem}
 .show-card{position:relative;z-index:1;margin:-150px 0 0 auto;max-width:540px;background:var(--asphalt);color:#fff;padding:44px 46px 40px;border-top:3px solid var(--yellow);--eyeline:var(--yellow)}
@@ -161,10 +165,31 @@ nav a:hover::after{right:0}
 .ctrl button:hover{background:var(--yellow);color:var(--asphalt);border-color:var(--yellow)}
 .ctrl svg{width:18px;height:18px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:250px;gap:16px;margin-top:48px}
-.tile{transition:opacity .45s}
+.tile{display:block;width:100%;height:100%;padding:0;border:0;font:inherit;color:inherit;text-align:left;cursor:zoom-in;transition:opacity .45s}
+.tile:disabled{cursor:default}
 .tile.out{opacity:0}
-.tile .cap{display:none;position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(0deg,rgba(20,21,23,.75),transparent);font:600 .72rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff}
-.tile.loaded .cap{display:block}
+.tile .cap{display:none;position:absolute;left:0;right:0;bottom:0;align-items:center;justify-content:space-between;gap:12px;padding:40px 16px 14px 18px;background:linear-gradient(0deg,rgba(20,21,23,.75),transparent);font:600 .72rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff}
+.tile .cap svg{flex:none;width:16px;height:16px;opacity:.85;transition:opacity .2s,color .2s}
+.tile:hover .cap svg,.tile:focus-visible .cap svg{opacity:1;color:var(--yellow)}
+.tile.loaded .cap{display:flex}
+
+/* vergrootvenster */
+.lb{padding:0;border:0;margin:auto;background:transparent;color:#fff;max-width:none;max-height:none;overflow:visible}
+.lb::backdrop{background:rgba(20,21,23,.88)}
+.lb-box{margin:0;min-width:min(320px,92vw);background:var(--asphalt);border-top:3px solid var(--yellow);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.lb-img{display:block;width:auto;height:auto;max-width:min(1100px,92vw);max-height:calc(86vh - 72px);margin:0 auto}
+.lb-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 12px 12px 20px}
+.lb-cap{font:600 1.35rem/1.1 var(--serif)}
+.lb-cap small{display:block;margin-top:6px;font:600 .68rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#A9A9A3}
+.lb-ctrl{display:flex;gap:8px;--focus:#fff}
+.lb-ctrl button{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);cursor:pointer;transition:background .25s,color .25s,border-color .25s}
+.lb-ctrl button:hover{background:var(--yellow);color:var(--asphalt);border-color:var(--yellow)}
+.lb-ctrl svg{width:18px;height:18px}
+.lb[open] .lb-box{animation:lbIn .22s ease}
+.lb[open]::backdrop{animation:lbFade .22s ease}
+@keyframes lbIn{from{opacity:0;transform:scale(.97)}}
+@keyframes lbFade{from{opacity:0}}
+html.lb-on{overflow:hidden}
 @media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:170px}}
 
 /* about */
@@ -214,7 +239,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   html{scroll-behavior:auto}
   .js .hero-in>*{opacity:1;transform:none;animation:none}
   .js .reveal{opacity:1;transform:none;transition:none}
-  .show-photo img{transform:none;transition:none}
+  .show-photo img,.js .show-photo img{transform:none;transition:none}
+  .lb[open] .lb-box,.lb[open]::backdrop{animation:none}
   .btn,.tile,.services h3{transition:none}
 }
 </style>
@@ -272,8 +298,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
   </section>
 
   <section class="showcase" id="uitgelicht" aria-label="Uitgelicht werk">
-    <figure class="photo show-photo zoom" data-label="Plaats hier uw mooiste foto, bijvoorbeeld een oprit of straat">
-      <img src="images/uitgelicht.jpg" alt="Stratenmaker van Gebr. de Waard legt sierbestrating naast een woning">
+    <!-- Het wazige voorbeeld (style) hoort bij deze foto. Nieuwe foto? Vraag een nieuw voorbeeld aan of haal de style weg. -->
+    <figure class="photo show-photo zoom" data-label="Plaats hier uw mooiste foto, bijvoorbeeld een oprit of straat" style="background-image:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAXADADASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAUGBAP/xAAmEAABAwIEBwEBAAAAAAAAAAABAAIDBBEFBhJBEyEjMTJRYRTR/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgMB/8QAGxEBAQACAwEAAAAAAAAAAAAAAQACEhETIUH/2gAMAwEAAhEDEQA/AEFDE3E5o4BojN/I7qtpcvGC4dPGPSiqU8I97Ebhbf1TOaes9x9ak+nk8Y9nDNsfpoo6mOGORheB2J7pSYJYyHOY63uyzU/HOINqJoTJbZxuFbUToq6MR9ON9vG6CayEaGdyPMWVJNh76zLVNT05Dnk6nAHtdOarLoc25jY8/ElmwURE6TJEfhQ3J6PynISHvFxyW2PSzxaAhCuPlC6h66RzGNwcNkIWNpPKLMD4QA6727tP9VFSVNNicGpjT9DghChniFXFv//Z)">
+      <img src="images/uitgelicht.jpg" alt="Stratenmaker van Gebr. de Waard legt sierbestrating naast een woning" fetchpriority="high" decoding="async">
     </figure>
     <div class="wrap">
       <div class="show-card reveal">
@@ -319,6 +346,20 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
       <div class="grid reveal" id="grid"></div>
     </div>
   </section>
+
+  <dialog class="lb" id="lb" aria-label="Vergrote foto">
+    <figure class="lb-box">
+      <img class="lb-img" id="lb-img" alt="">
+      <figcaption class="lb-bar">
+        <span class="lb-cap"><span id="lb-title"></span><small id="lb-count"></small></span>
+        <span class="lb-ctrl">
+          <button type="button" id="lb-prev" aria-label="Vorige foto"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3 5 9l6 6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          <button type="button" id="lb-next" aria-label="Volgende foto"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="m7 3 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          <button type="button" id="lb-close" aria-label="Sluiten" autofocus><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4 4 14" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        </span>
+      </figcaption>
+    </figure>
+  </dialog>
 
   <section id="over-ons">
     <div class="wrap about">
@@ -390,7 +431,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 const FORM_EMAIL = 'riemer.dijkstra@hotmail.com';
 
 // Fotogalerij: zet de foto's als images/galerij-01.jpg t/m galerij-12.jpg in de map images.
-// Ontbreekt een foto, dan toont de site een plaatshouder. Meer foto's? Voeg regels toe.
+// Zet daarnaast een kleine versie (800 pixels breed) met dezelfde naam in images/klein.
+// De tegels tonen de kleine versie, het vergrootvenster de grote. Ontbreekt de kleine, dan pakt de site de grote.
+// Ontbreekt een foto helemaal, dan toont de site een plaatshouder. Meer foto's? Voeg regels toe.
 // De volgorde hieronder is de volgorde in de slideshow: de eerste 6 vormen het eerste scherm.
 // Foto's met dezelfde titel (zoals twee keer Terras) staan nooit tegelijk in beeld.
 const FOTOS = [
@@ -426,9 +469,11 @@ function makeLabel(text, file){
 document.querySelectorAll('figure.photo').forEach(fig => {
   const img = fig.querySelector('img');
   fig.append(makeLabel(fig.dataset.label || 'Foto', img.getAttribute('src')));
-  const ok = () => fig.classList.add('loaded'), bad = () => img.remove();
+  const ok = () => fig.classList.add('loaded');
+  const bad = () => { img.remove(); fig.style.backgroundImage = ''; fig.classList.add('missing'); };
+  const show = () => (img.decode ? img.decode().catch(() => {}) : Promise.resolve()).then(ok);
   if (img.complete){ img.naturalWidth ? ok() : bad(); }
-  else { img.addEventListener('load', ok); img.addEventListener('error', bad); }
+  else { img.addEventListener('load', show); img.addEventListener('error', bad); }
 });
 
 
@@ -535,8 +580,28 @@ if (reduce || !('IntersectionObserver' in window)){
 }
 
 /* ---- Fotogalerij ---- */
-const SLOTS = 6, N = FOTOS.length, failed = new Set();
+const SLOTS = 6, N = FOTOS.length;
 const grid = document.getElementById('grid');
+const klein = src => src.replace(/^images\//, 'images/klein/');
+const within = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
+const EXPAND = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8V3h5M12 3h5v5M17 12v5h-5M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>';
+
+// Laad een foto (eerst de kleine versie, anders de grote) en onthoud welk adres werkte.
+const ready = new Map();
+function loadFoto(f){
+  if (!f.src) return Promise.resolve(null);
+  if (!ready.has(f.src)) ready.set(f.src, new Promise(res => {
+    const attempt = (url, next) => {
+      const im = new Image(); im.decoding = 'async';
+      im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(() => res(url));
+      im.onerror = () => next ? attempt(next, null) : res(null);
+      im.src = url;
+    };
+    attempt(klein(f.src), f.src);
+  }));
+  return ready.get(f.src);
+}
+
 // Mag foto c in vak i? Niet als dezelfde foto of dezelfde titel al in een ander vak staat.
 const clash = (c, i, arr) => arr.some((x, j) => j !== i && (x === c || FOTOS[x].t === FOTOS[c].t));
 function uniq(arr){
@@ -549,40 +614,65 @@ function uniq(arr){
   return out;
 }
 let slots = uniq(Array.from({length:SLOTS}, (_, i) => i % N));
-let tick = 0, playing = !reduce, inView = false, hover = false;
-const tiles = slots.map(() => { const d = document.createElement('div'); grid.appendChild(d); return d; });
+let tick = 0, playing = !reduce, inView = false, hover = false, galleryOn = false;
+const tiles = slots.map(() => { const b = document.createElement('button'); b.type = 'button'; grid.appendChild(b); return b; });
 
 function fill(el, idx){
   const f = FOTOS[idx];
+  el.dataset.idx = idx;
   el.className = 'tile photo';
-  el.setAttribute('role', 'img'); el.setAttribute('aria-label', f.t);
+  el.disabled = true;
+  el.setAttribute('aria-label', 'Vergroot foto: ' + f.t);
   el.replaceChildren(makeLabel(f.t, f.src || ''));
-  const cap = document.createElement('span'); cap.className = 'cap'; cap.textContent = f.t; el.append(cap);
-  if (f.src && !failed.has(f.src)){
-    const im = new Image(); im.alt = ''; im.decoding = 'async'; im.loading = 'lazy';
-    im.onload = () => el.classList.add('loaded');
-    im.onerror = () => { failed.add(f.src); im.remove(); };
-    el.prepend(im); im.src = f.src;
-  }
+  const cap = document.createElement('span'); cap.className = 'cap'; cap.innerHTML = EXPAND;
+  cap.prepend(f.t); el.append(cap);
+  if (!galleryOn) return Promise.resolve();
+  return loadFoto(f).then(url => {
+    if (el.dataset.idx !== String(idx)) return;      // vak heeft intussen een andere foto
+    if (!url){ el.classList.add('missing'); return; }
+    const im = new Image(); im.alt = ''; im.src = url; el.prepend(im);
+    el.disabled = false;
+    requestAnimationFrame(() => el.classList.add('loaded'));
+  });
 }
-function render(){ tiles.forEach((el, i) => fill(el, slots[i])); }
+const render = () => Promise.all(tiles.map((el, i) => fill(el, slots[i])));
+// Bladeren en automatisch wisselen mogen elkaar niet kruisen, anders kan een titel dubbel in beeld komen.
+let gen = 0, busy = false;
 function shift(d){
+  const g = ++gen;
   tiles.forEach(t => t.classList.add('out'));
-  const go = () => { slots = uniq(slots.map(x => (((x + d * SLOTS) % N) + N) % N)); render(); requestAnimationFrame(() => tiles.forEach(t => t.classList.remove('out'))); };
+  const go = () => {
+    if (g !== gen) return;
+    slots = uniq(slots.map(x => (((x + d * SLOTS) % N) + N) % N));
+    within(render(), 1200).then(() => { if (g === gen) requestAnimationFrame(() => tiles.forEach(t => t.classList.remove('out'))); });
+  };
   reduce ? go() : setTimeout(go, 450);
 }
 function replaceOne(){
-  if (N <= SLOTS) return;
-  const i = tick++ % SLOTS;
-  let c = slots[i], k = 0;
-  do { c = (c + 1) % N; } while (clash(c, i, slots) && ++k < N);
-  if (c === slots[i]) return;
-  const el = tiles[i];
-  if (reduce){ slots[i] = c; fill(el, c); return; }
+  if (N <= SLOTS || busy) return;
+  const i = tick++ % SLOTS, g = gen, el = tiles[i];
+  busy = true;
   el.classList.add('out');
-  setTimeout(() => { slots[i] = c; fill(el, c); requestAnimationFrame(() => el.classList.remove('out')); }, 450);
+  setTimeout(() => {
+    if (g !== gen){ busy = false; return; }        // er is intussen gebladerd
+    let c = slots[i], k = 0;
+    do { c = (c + 1) % N; } while (clash(c, i, slots) && ++k < N);
+    if (c === slots[i]){ busy = false; el.classList.remove('out'); return; }
+    slots[i] = c;
+    within(fill(el, c), 1200).then(() => { busy = false; if (g === gen) requestAnimationFrame(() => el.classList.remove('out')); });
+  }, reduce ? 0 : 450);
 }
 render();
+
+// Start met laden als de pagina klaar is (de uitgelichte foto gaat voor), of eerder als de galerij in de buurt komt.
+// Daarna worden alle overige foto's alvast geladen, zodat het wisselen direct gaat.
+function startGallery(){
+  if (galleryOn) return;
+  galleryOn = true;
+  render().then(() => FOTOS.forEach(loadFoto));
+}
+if (document.readyState === 'complete') startGallery(); else addEventListener('load', startGallery);
+new IntersectionObserver((e, o) => { if (e[0].isIntersecting){ startGallery(); o.disconnect(); } }, {rootMargin:'800px 0px'}).observe(grid);
 
 const pp = document.getElementById('pp');
 function setPlaying(v){ playing = v; pp.textContent = v ? 'Pauzeer' : 'Speel af'; pp.setAttribute('aria-pressed', String(!v)); }
@@ -593,9 +683,46 @@ document.getElementById('next').addEventListener('click', () => shift(1));
 grid.addEventListener('mouseenter', () => hover = true);
 grid.addEventListener('mouseleave', () => hover = false);
 new IntersectionObserver(e => inView = e[0].isIntersecting, {threshold:.25}).observe(document.getElementById('projecten'));
-setInterval(() => { if (playing && inView && !hover && !document.hidden) replaceOne(); }, WISSEL_MS);
+
+/* ---- Vergrootvenster ---- */
+const lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img');
+const lbTitle = document.getElementById('lb-title'), lbCount = document.getElementById('lb-count');
+let lbIdx = 0;
+function lbShow(idx){
+  const my = lbIdx = (idx + N) % N, f = FOTOS[my];
+  lbTitle.textContent = f.t; lbCount.textContent = (my + 1) + ' van ' + N; lbImg.alt = f.t;
+  // Eerst de kleine versie (staat al klaar), daarna de grote zodra die binnen is.
+  let big = false;
+  loadFoto(f).then(url => { if (lbIdx === my && url && !big) lbImg.src = url; });
+  const im = new Image(); im.decoding = 'async';
+  im.onload = () => { if (lbIdx === my){ big = true; lbImg.src = f.src; } };
+  im.src = f.src;
+  // Buren alvast laden voor snel bladeren
+  [my + 1, my - 1].forEach(j => { const n = new Image(); n.src = FOTOS[(j + N) % N].src; });
+}
+function lbOpen(idx){
+  lbImg.removeAttribute('src');
+  lbShow(idx);
+  document.documentElement.classList.add('lb-on');
+  lb.showModal();
+}
+grid.addEventListener('click', e => {
+  const t = e.target.closest('.tile');
+  if (t && !t.disabled) lbOpen(+t.dataset.idx);
+});
+document.getElementById('lb-prev').addEventListener('click', () => lbShow(lbIdx - 1));
+document.getElementById('lb-next').addEventListener('click', () => lbShow(lbIdx + 1));
+document.getElementById('lb-close').addEventListener('click', () => lb.close());
+lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });   // klik naast de foto sluit
+lb.addEventListener('close', () => document.documentElement.classList.remove('lb-on'));
+lb.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight'){ e.preventDefault(); lbShow(lbIdx + 1); }
+  if (e.key === 'ArrowLeft'){ e.preventDefault(); lbShow(lbIdx - 1); }
+});
+
+setInterval(() => { if (playing && inView && !hover && !lb.open && !document.hidden) replaceOne(); }, WISSEL_MS);
 document.addEventListener('keydown', e => {
-  if (!inView || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (lb.open || !inView || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
   if (e.key === 'ArrowRight'){ e.preventDefault(); shift(1); }
   if (e.key === 'ArrowLeft'){ e.preventDefault(); shift(-1); }
 });
