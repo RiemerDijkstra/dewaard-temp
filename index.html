@@ -403,19 +403,21 @@ const FORM_EMAIL = 'riemer.dijkstra@hotmail.com';
 
 // Fotogalerij: zet de foto's als images/galerij-01.jpg t/m galerij-12.jpg in de map images.
 // Ontbreekt een foto, dan toont de site een plaatshouder. Meer foto's? Voeg regels toe.
+// De volgorde hieronder is de volgorde in de slideshow: de eerste 6 vormen het eerste scherm.
+// Foto's met dezelfde titel (zoals twee keer Terras) staan nooit tegelijk in beeld.
 const FOTOS = [
   {t:'Sierbestrating',        src:'images/galerij-01.jpg'},
   {t:'Oprit',                 src:'images/galerij-02.jpg'},
   {t:'Parkeerplaats',         src:'images/galerij-03.jpg'},
-  {t:'Trottoir',              src:'images/galerij-04.jpg'},
-  {t:'Rijweg',                src:'images/galerij-05.jpg'},
+  {t:'Terras',                src:'images/galerij-10.jpg'},
+  {t:'Tuinpad',               src:'images/galerij-08.jpg'},
   {t:'Herbestrating',         src:'images/galerij-06.jpg'},
   {t:'Terras',                src:'images/galerij-07.jpg'},
-  {t:'Machinale bestrating',  src:'images/galerij-08.jpg'},
-  {t:'Reparatie',             src:'images/galerij-09.jpg'},
-  {t:'Bedrijfsterrein',       src:'images/galerij-10.jpg'},
+  {t:'Rijweg',                src:'images/galerij-05.jpg'},
+  {t:'Terras',                src:'images/galerij-09.jpg'},
+  {t:'Trottoir',              src:'images/galerij-04.jpg'},
   {t:'Tuinpad',               src:'images/galerij-11.jpg'},
-  {t:'Minikraan aan het werk',src:'images/galerij-12.jpg'}
+  {t:'Sierbestrating',        src:'images/galerij-12.jpg'}
 ];
 const WISSEL_MS = 5000;   // elke 5 seconden een nieuwe foto
 
@@ -574,7 +576,18 @@ if (reduce || !('IntersectionObserver' in window)){
 /* ---- Fotogalerij ---- */
 const SLOTS = 6, N = FOTOS.length, failed = new Set();
 const grid = document.getElementById('grid');
-let slots = Array.from({length:SLOTS}, (_, i) => i % N);
+// Mag foto c in vak i? Niet als dezelfde foto of dezelfde titel al in een ander vak staat.
+const clash = (c, i, arr) => arr.some((x, j) => j !== i && (x === c || FOTOS[x].t === FOTOS[c].t));
+function uniq(arr){
+  const out = [];
+  arr.forEach(x => {
+    let c = x, k = 0;
+    while (out.some(y => y === c || FOTOS[y].t === FOTOS[c].t) && k++ < N) c = (c + 1) % N;
+    out.push(c);
+  });
+  return out;
+}
+let slots = uniq(Array.from({length:SLOTS}, (_, i) => i % N));
 let tick = 0, playing = !reduce, inView = false, hover = false;
 const tiles = slots.map(() => { const d = document.createElement('div'); grid.appendChild(d); return d; });
 
@@ -594,14 +607,15 @@ function fill(el, idx){
 function render(){ tiles.forEach((el, i) => fill(el, slots[i])); }
 function shift(d){
   tiles.forEach(t => t.classList.add('out'));
-  const go = () => { slots = slots.map(x => (((x + d * SLOTS) % N) + N) % N); render(); requestAnimationFrame(() => tiles.forEach(t => t.classList.remove('out'))); };
+  const go = () => { slots = uniq(slots.map(x => (((x + d * SLOTS) % N) + N) % N)); render(); requestAnimationFrame(() => tiles.forEach(t => t.classList.remove('out'))); };
   reduce ? go() : setTimeout(go, 450);
 }
 function replaceOne(){
   if (N <= SLOTS) return;
   const i = tick++ % SLOTS;
-  let c = slots[i];
-  do { c = (c + 1) % N; } while (slots.includes(c));
+  let c = slots[i], k = 0;
+  do { c = (c + 1) % N; } while (clash(c, i, slots) && ++k < N);
+  if (c === slots[i]) return;
   const el = tiles[i];
   if (reduce){ slots[i] = c; fill(el, c); return; }
   el.classList.add('out');
