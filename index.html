@@ -171,7 +171,6 @@ nav a:hover::after{right:0}
 .tile.out{opacity:0}
 .tile .cap{display:none;position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(0deg,rgba(20,21,23,.75),transparent);font:600 .72rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#fff}
 .tile.loaded .cap{display:block}
-.hint{margin:22px 0 0;font-size:.9rem;color:#A9A9A3}
 @media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:170px}}
 
 /* about */
@@ -319,7 +318,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
         <div>
           <p class="eyebrow">Projecten</p>
           <h2>Ons werk</h2>
-          <p class="lead">Een greep uit onze projecten. De foto's wisselen vanzelf.</p>
+          <p class="lead">Een greep uit onze projecten. De foto's wisselen vanzelf of gebruik de pijltjestoetsen.</p>
         </div>
         <div class="ctrl">
           <button type="button" id="prev" aria-label="Vorige foto's"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3 5 9l6 6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
@@ -328,7 +327,6 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
         </div>
       </div>
       <div class="grid reveal" id="grid"></div>
-      <p class="hint">Tip: gebruik de pijltjestoetsen op uw toetsenbord om door de foto's te bladeren.</p>
     </div>
   </section>
 
@@ -415,7 +413,7 @@ const FOTOS = [
   {t:'Terras',                src:'images/galerij-07.jpg'},
   {t:'Rijweg',                src:'images/galerij-05.jpg'},
   {t:'Terras',                src:'images/galerij-09.jpg'},
-  {t:'Trottoir',              src:'images/galerij-04.jpg'},
+  {t:'Tuinpad',               src:'images/galerij-04.jpg'},
   {t:'Tuinpad',               src:'images/galerij-11.jpg'},
   {t:'Sierbestrating',        src:'images/galerij-12.jpg'}
 ];
